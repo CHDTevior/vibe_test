@@ -24,9 +24,22 @@ def parse_args() -> argparse.Namespace:
 
 def evaluate_model(checkpoint: Path, data_root: Path) -> tuple[float, float]:
     payload = torch.load(checkpoint, weights_only=False)
-    if not isinstance(payload, dict) or "model_state_dict" not in payload:
-        raise ValueError("Checkpoint missing model_state_dict")
-    train_state = payload["model_state_dict"]
+    if not isinstance(payload, dict):
+        raise ValueError("Checkpoint payload invalid")
+
+    if "model_state_dict" in payload and isinstance(payload["model_state_dict"], dict):
+        train_state = payload["model_state_dict"]
+    elif {"model", "state_dict", "weights", "model_state"}.intersection(payload.keys()):
+        for key in ("model", "state_dict", "weights", "model_state"):
+            if key in payload:
+                train_state = payload[key]
+                break
+    else:
+        # compatibility: allow storing raw state dict directly
+        train_state = payload
+
+    if not isinstance(train_state, dict):
+        raise ValueError("Checkpoint does not contain a valid state dict")
 
     val = torch.load(data_root / "val.pt", weights_only=False)
     x = val["x"].float()
