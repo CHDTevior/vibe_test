@@ -1,0 +1,7 @@
+{
+  "status": "completed",
+  "best_epoch": 10,
+  "best_val_mse": 0.048312317579984665,
+  "final_epoch": 10,
+  "seed": 123
+}

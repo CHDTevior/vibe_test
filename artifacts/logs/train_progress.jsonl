@@ -1,0 +1,10 @@
+{"epoch": 1, "train_mse": 3.5093385783525615, "val_mse": 0.6471144556999207, "seed": 123, "hidden_dim": 24, "hidden_layers": 1}
+{"epoch": 2, "train_mse": 0.3080215339477246, "val_mse": 0.1924498826265335, "seed": 123, "hidden_dim": 24, "hidden_layers": 1}
+{"epoch": 3, "train_mse": 0.12309834217795959, "val_mse": 0.08861276507377625, "seed": 123, "hidden_dim": 24, "hidden_layers": 1}
+{"epoch": 4, "train_mse": 0.06639515006771454, "val_mse": 0.06429759413003922, "seed": 123, "hidden_dim": 24, "hidden_layers": 1}
+{"epoch": 5, "train_mse": 0.05075766547368123, "val_mse": 0.05633692070841789, "seed": 123, "hidden_dim": 24, "hidden_layers": 1}
+{"epoch": 6, "train_mse": 0.04437174117909028, "val_mse": 0.05675407126545906, "seed": 123, "hidden_dim": 24, "hidden_layers": 1}
+{"epoch": 7, "train_mse": 0.043747671879827976, "val_mse": 0.05277194082736969, "seed": 123, "hidden_dim": 24, "hidden_layers": 1}
+{"epoch": 8, "train_mse": 0.03980693178108105, "val_mse": 0.0504753403365612, "seed": 123, "hidden_dim": 24, "hidden_layers": 1}
+{"epoch": 9, "train_mse": 0.038708686183851496, "val_mse": 0.04838550463318825, "seed": 123, "hidden_dim": 24, "hidden_layers": 1}
+{"epoch": 10, "train_mse": 0.03847566175346191, "val_mse": 0.048312317579984665, "seed": 123, "hidden_dim": 24, "hidden_layers": 1}
