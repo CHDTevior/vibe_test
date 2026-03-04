@@ -1,0 +1,4 @@
+{"run_id":"bootstrap_001","status":"not_started","phase":"bootstrap","goal":"initialize env/skeleton","created_at":"2026-03-04T00:00:00Z","notes":"auto-generated placeholder"}
+{"run_id":"smoke_002","status":"not_started","phase":"smoke_test","goal":"run 2-epoch deterministic smoke check","created_at":"2026-03-04T00:00:00Z","notes":"auto-generated placeholder"}
+{"run_id":"full_010","status":"not_started","phase":"full_run","goal":"run 10-epoch deterministic training","created_at":"2026-03-04T00:00:00Z","notes":"auto-generated placeholder"}
+{"run_id": "full_plan", "task": "T01", "status": "-", "timestamp": "2026-03-04T03:09:03.162597Z"}

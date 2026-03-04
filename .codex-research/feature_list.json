@@ -1,0 +1,98 @@
+[
+  {
+    "id": "F01",
+    "category": "Reproducibility",
+    "description": "Establish a deterministic, CPU-only environment using conda `vibe_test` with pip-managed dependencies and fixed Python/PyTorch seeds across data, dataloading, and training.",
+    "steps": [
+      "Pin runtime to Python 3.10+ and avoid GPU-specific launchers",
+      "Set and persist `PYTHONHASHSEED`, `random.seed`, NumPy, and PyTorch deterministic flags",
+      "Use fixed default seeds in generation, train, and eval entrypoints",
+      "Document seed behavior in spec and run scripts"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F02",
+    "category": "Data Engineering",
+    "description": "Create and persist pre-generated synthetic train/validation data from a known continuous function with controlled noise for learnable regression.",
+    "steps": [
+      "Implement `scripts/generate_data.py` to synthesize features and labels",
+      "Persist tensors to `artifacts/data/train.pt` and `artifacts/data/val.pt`",
+      "Write metadata (seed, split sizes, coefficients, noise level) to JSON",
+      "Validate dataset shape and non-degeneracy at generation time"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F03",
+    "category": "Model",
+    "description": "Implement a tiny MLP bounded by constraints (<=2 hidden layers, <=32 hidden units) suitable for small synthetic regression.",
+    "steps": [
+      "Create `src/model.py` with input -> [dense, activation] -> output architecture",
+      "Enforce width <=32 and max 2 hidden layers through defaults/assertions",
+      "Initialize deterministically with fixed seed and torch manual seed",
+      "Expose a minimal API callable from train/eval scripts"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F04",
+    "category": "Training Pipeline",
+    "description": "Build deterministic 10-epoch CPU training with metric tracking, checkpointing, and epoch-by-epoch progress output.",
+    "steps": [
+      "Implement `src/train.py` with DataLoader, optimizer, MSE loss, and fixed defaults",
+      "Log train/val loss per epoch to console and `artifacts/logs/train_progress.jsonl`",
+      "Save checkpoints (`last.pt`, `best.pt`) and optionally best-metric metadata",
+      "Guard against NaN/Inf losses and fail fast with explicit errors"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F05",
+    "category": "Evaluation",
+    "description": "Implement validation metric computation and deterministic reporting for smoke and full runs.",
+    "steps": [
+      "Implement `src/eval.py` for deterministic validation pass",
+      "Write epoch-level summary to `artifacts/logs/eval_progress.jsonl`",
+      "Report final and best validation MSE in machine-readable form",
+      "Use fixed dataloader order with no shuffling in validation"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F06",
+    "category": "Quality Gates",
+    "description": "Add deterministic smoke test plus run-time checks for reproducibility and file integrity.",
+    "steps": [
+      "Add `checks/smoke_test.sh` requiring at least 2 epochs",
+      "Verify artifacts (`train`, `val`, logs, checkpoints, report) exist",
+      "Check non-empty progress logs and finite numeric losses",
+      "Ensure a clean second run with same seed produces stable metrics"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F07",
+    "category": "Progress + Sync",
+    "description": "Integrate explicit progress checkpoints and repository synchronization with each progress update.",
+    "steps": [
+      "Maintain `session_progress.md` with task status and latest metrics",
+      "Append status objects to `.codex-research/run_registry.jsonl`",
+      "Run git sync against `https://github.com/CHDTevior/vibe_test.git` on checkpointed updates",
+      "Record sync attempts (success/failure) with timestamps"
+    ],
+    "passes": false
+  },
+  {
+    "id": "F08",
+    "category": "Orchestration",
+    "description": "Provide runnable entry scripts for single-task and full-plan execution with deterministic ordering.",
+    "steps": [
+      "Implement `run_one_task.sh` mapped to task IDs",
+      "Implement `run_plan.sh` executing ordered task list",
+      "Use fixed 10-epoch defaults in full run path",
+      "Emit structured failure messages without silent fallbacks"
+    ],
+    "passes": false
+  }
+]

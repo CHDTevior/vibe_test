@@ -1,0 +1,89 @@
+# Normalized Research Plan
+## Objectives
+- Build a minimal, reproducible ML workflow that trains a very small MLP on pre-generated synthetic data.
+- Verify training loss decreases and validation metric improves relative to baseline.
+- Keep the workflow simple and deterministic so it can run on CPU within short time, with a fixed training regime of 10 epochs.
+
+## Constraints
+- Use only pre-generated random data; no online data fetching.
+- Keep the model small: at most 2 hidden layers and hidden size at most 32.
+- Use deterministic seeds for dataset generation and training.
+- Keep dependencies minimal (prefer Python + PyTorch only).
+- Train using CPU only; do not use Slurm.
+- Default environment should be a conda environment named `vibe_test`, with dependencies installed via `pip` by default.
+- Record key metrics in a progress file.
+- On each progress update, synchronize updates to the Git repository at `https://github.com/CHDTevior/vibe_test.git`.
+
+## Environment and Resources
+- Runtime: local Python 3.10+.
+- Framework: PyTorch.
+- Hardware: CPU only.
+- Artifacts path: `artifacts/`.
+- Experiment workspace path requirement: update to `https://github.com/CHDTevior/vibe_test.git`.
+
+## Milestones
+1. Create reproducible synthetic dataset generation and persist train/val splits.
+2. Implement tiny MLP model and deterministic training loop.
+3. Add evaluation, logging (including key metrics), and smoke test.
+4. Configure and run complete pipeline from clean environment with 10 epochs and verify deterministic behavior.
+5. Ensure progress and outputs are captured and reflected in the repository update process.
+
+## Task Checklist
+- [ ] Create project skeleton: `src/`, `configs/`, `scripts/`, `artifacts/`.
+- [ ] Create and document conda environment `vibe_test`, defaulting to pip-managed dependencies.
+- [ ] Implement `scripts/generate_data.py` to pre-generate random features and labels.
+- [ ] Save dataset files to disk (for example, `artifacts/data/train.pt`, `artifacts/data/val.pt`).
+- [ ] Implement `src/model.py` with a tiny MLP (input → hidden → output) within stated size limits.
+- [ ] Implement `src/train.py` with DataLoader, optimizer, loss, and deterministic train loop.
+- [ ] Set fixed defaults and override paths/parameters for 10 epochs, batch size, LR, seed, hidden dimension.
+- [ ] Implement `src/eval.py` for validation metric and simple report output.
+- [ ] Add per-epoch logging of train/val loss (and key metrics) to console, progress file, and `artifacts/logs/`.
+- [ ] Add `scripts/run_train.sh` to execute the full pipeline deterministically.
+- [ ] Add `scripts/smoke_test.sh` for short deterministic training (minimum 2 epochs) and output presence checks.
+- [ ] Add progress-update step to sync repository at `https://github.com/CHDTevior/vibe_test.git` for each progress checkpoint.
+- [ ] Document usage in `README.md`.
+- [ ] Record final summary with best validation loss and runtime.
+
+## Evaluation and Success Criteria
+- Primary metric: validation MSE (or BCE if using binary labels) decreases compared with epoch-0 baseline.
+- Sanity checks:
+  - Training loss decreases for most epochs.
+  - No NaN/Inf in loss.
+  - Checkpoint/log files are generated.
+- Reproducibility checks:
+  - Same seed gives near-identical metrics.
+  - Smoke test passes on a clean run.
+- Logging/signaling checks:
+  - Progress file contains key metrics at checkpoints.
+  - Progress updates are propagated to the configured Git repository path.
+
+## Execution Signals
+- evaluation: explicit success criteria include validation metric tracking, loss sanity checks, and reproducibility checks.
+
+## Risks and Mitigations
+- Risk: Random labels may be unlearnable.
+  - Mitigation: generate labels from a known function of inputs with small noise.
+- Risk: Overfitting due to tiny dataset.
+  - Mitigation: maintain train/val split and monitor both losses.
+- Risk: Nondeterministic behavior.
+  - Mitigation: set deterministic seeds for Python, NumPy, and PyTorch.
+- Risk: Progress updates not consistently persisted.
+  - Mitigation: define progress update as a required checklist step tied to repository path.
+- Risk: Logging misses key metrics.
+  - Mitigation: enforce structured progress file outputs and include key metric fields.
+
+## Open Questions
+- Should the task target be regression (default: regression with MSE) or binary classification (BCE)?
+- Should checkpoints be saved every epoch or only the best model?
+- Preferred config style: argparse-only or YAML config?
+- What constitutes a “progress update” for the required repository sync process (per epoch, per milestone, or per run)?
+
+## Source Mapping
+- Objectives: original `## Objectives` bullets; plus 10-epoch and CPU constraints from `## human add`.
+- Constraints: original `## Constraints` bullets; added environment/process constraints from `## human add` (`vibe_test`, progress metric file, Git path, no Slurm CPU-only).
+- Environment and Resources: original `## Environment and Resources`; and `## human add` on conda env and no Slurm.
+- Milestones: original `## Milestones` and ordering expanded with deterministic run/10-epoch requirement from Chinese additions.
+- Task Checklist: original checklist items plus added environment/reproducibility/process-control tasks from `## human add`.
+- Evaluation and Success Criteria: original `## Evaluation and Success Criteria` plus progress-file requirement and repository update requirement from `## human add`.
+- Risks and Mitigations: original `## Risks and Mitigations` and added operational risk around progress sync/log completeness.
+- Open Questions: retained all three original questions and added scoped questions for ambiguous progress-update semantics and sync granularity.

@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-03-04T03:03:52+00:00",
+  "plan_path": "/iridisfs/scratch/ts1v23/workspace/vibe_coding/codex_auto_demo/.codex-research/plan/normalized_plan.md",
+  "source": "codex",
+  "summary": "Generated the full Codex DL harness metadata package for the provided normalized plan, including deterministic CPU-only workflow definitions, orchestration scripts, execution prompts, progress tracking, synchronization policy, and mechanism docs. All mandatory `.codex-research/` core files are included and ordered consistently.",
+  "required_files": [
+    {
+      "path": ".codex-research/research_spec.md",
+      "reason": "Canonical spec grounding objectives, constraints, and success gates."
+    },
+    {
+      "path": ".codex-research/feature_list.json",
+      "reason": "Machine-readable feature list aligned to the normalized plan."
+    },
+    {
+      "path": ".codex-research/task_plan.json",
+      "reason": "Machine-readable execution plan consumed by Codex runners."
+    },
+    {
+      "path": ".codex-research/required_files.json",
+      "reason": "Path manifest consumed for harness validation and auditing."
+    },
+    {
+      "path": ".codex-research/session_progress.md",
+      "reason": "Live session tracker and operator-facing checkpoint log."
+    },
+    {
+      "path": ".codex-research/decision_log.md",
+      "reason": "Tracks ambiguity resolutions and justifications for critical choices."
+    },
+    {
+      "path": ".codex-research/run_registry.jsonl",
+      "reason": "Append-only execution history for checkpoints and status transitions."
+    },
+    {
+      "path": ".codex-research/init.sh",
+      "reason": "Bootstraps local environment, directories, and remote target; enforces CPU/pip baseline."
+    },
+    {
+      "path": ".codex-research/checks/smoke_test.sh",
+      "reason": "Deterministic 2-epoch smoke validation and artifact assertions."
+    },
+    {
+      "path": ".codex-research/prompts/initializer.md",
+      "reason": "Defines bootstrap behavior for each run."
+    },
+    {
+      "path": ".codex-research/prompts/worker.md",
+      "reason": "Guides worker actions and required update/sync discipline."
+    },
+    {
+      "path": ".codex-research/workflow/CODEX.md",
+      "reason": "Codex-specific operational protocol and state machine."
+    },
+    {
+      "path": ".codex-research/run_one_task.sh",
+      "reason": "Executes one planned task ID and performs sync + registry logging."
+    },
+    {
+      "path": ".codex-research/run_plan.sh",
+      "reason": "Runs ordered tasks with registry bookkeeping and final progress marker."
+    },
+    {
+      "path": ".codex-research/execution_guide.zh-CN.md",
+      "reason": "Chinese operator guide for reproducible execution and verification steps."
+    },
+    {
+      "path": ".codex-research/MECHANISM.md",
+      "reason": "Explains governance, artifact contracts, and failure semantics for this Codex DL mechanism."
+    }
+  ]
+}

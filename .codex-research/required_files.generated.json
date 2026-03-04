@@ -1,0 +1,281 @@
+{
+  "generated_at": "2026-03-04T03:03:52+00:00",
+  "plan_path": "/iridisfs/scratch/ts1v23/workspace/vibe_coding/codex_auto_demo/.codex-research/plan/normalized_plan.md",
+  "source": "codex",
+  "summary": "Generated the full Codex DL harness metadata package for the provided normalized plan, including deterministic CPU-only workflow definitions, orchestration scripts, execution prompts, progress tracking, synchronization policy, and mechanism docs. All mandatory `.codex-research/` core files are included and ordered consistently.",
+  "required_files": [
+    {
+      "path": ".codex-research/research_spec.md",
+      "reason": "Canonical spec grounding objectives, constraints, and success gates."
+    },
+    {
+      "path": ".codex-research/feature_list.json",
+      "reason": "Machine-readable feature list aligned to the normalized plan."
+    },
+    {
+      "path": ".codex-research/task_plan.json",
+      "reason": "Machine-readable execution plan consumed by Codex runners."
+    },
+    {
+      "path": ".codex-research/required_files.json",
+      "reason": "Path manifest consumed for harness validation and auditing."
+    },
+    {
+      "path": ".codex-research/session_progress.md",
+      "reason": "Live session tracker and operator-facing checkpoint log."
+    },
+    {
+      "path": ".codex-research/decision_log.md",
+      "reason": "Tracks ambiguity resolutions and justifications for critical choices."
+    },
+    {
+      "path": ".codex-research/run_registry.jsonl",
+      "reason": "Append-only execution history for checkpoints and status transitions."
+    },
+    {
+      "path": ".codex-research/init.sh",
+      "reason": "Bootstraps local environment, directories, and remote target; enforces CPU/pip baseline."
+    },
+    {
+      "path": ".codex-research/checks/smoke_test.sh",
+      "reason": "Deterministic 2-epoch smoke validation and artifact assertions."
+    },
+    {
+      "path": ".codex-research/prompts/initializer.md",
+      "reason": "Defines bootstrap behavior for each run."
+    },
+    {
+      "path": ".codex-research/prompts/worker.md",
+      "reason": "Guides worker actions and required update/sync discipline."
+    },
+    {
+      "path": ".codex-research/workflow/CODEX.md",
+      "reason": "Codex-specific operational protocol and state machine."
+    },
+    {
+      "path": ".codex-research/run_one_task.sh",
+      "reason": "Executes one planned task ID and performs sync + registry logging."
+    },
+    {
+      "path": ".codex-research/run_plan.sh",
+      "reason": "Runs ordered tasks with registry bookkeeping and final progress marker."
+    },
+    {
+      "path": ".codex-research/execution_guide.zh-CN.md",
+      "reason": "Chinese operator guide for reproducible execution and verification steps."
+    },
+    {
+      "path": ".codex-research/MECHANISM.md",
+      "reason": "Explains governance, artifact contracts, and failure semantics for this Codex DL mechanism."
+    }
+  ],
+  "feature_list": [
+    {
+      "id": "F01",
+      "category": "Reproducibility",
+      "description": "Establish a deterministic, CPU-only environment using conda `vibe_test` with pip-managed dependencies and fixed Python/PyTorch seeds across data, dataloading, and training.",
+      "steps": [
+        "Pin runtime to Python 3.10+ and avoid GPU-specific launchers",
+        "Set and persist `PYTHONHASHSEED`, `random.seed`, NumPy, and PyTorch deterministic flags",
+        "Use fixed default seeds in generation, train, and eval entrypoints",
+        "Document seed behavior in spec and run scripts"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F02",
+      "category": "Data Engineering",
+      "description": "Create and persist pre-generated synthetic train/validation data from a known continuous function with controlled noise for learnable regression.",
+      "steps": [
+        "Implement `scripts/generate_data.py` to synthesize features and labels",
+        "Persist tensors to `artifacts/data/train.pt` and `artifacts/data/val.pt`",
+        "Write metadata (seed, split sizes, coefficients, noise level) to JSON",
+        "Validate dataset shape and non-degeneracy at generation time"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F03",
+      "category": "Model",
+      "description": "Implement a tiny MLP bounded by constraints (<=2 hidden layers, <=32 hidden units) suitable for small synthetic regression.",
+      "steps": [
+        "Create `src/model.py` with input -> [dense, activation] -> output architecture",
+        "Enforce width <=32 and max 2 hidden layers through defaults/assertions",
+        "Initialize deterministically with fixed seed and torch manual seed",
+        "Expose a minimal API callable from train/eval scripts"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F04",
+      "category": "Training Pipeline",
+      "description": "Build deterministic 10-epoch CPU training with metric tracking, checkpointing, and epoch-by-epoch progress output.",
+      "steps": [
+        "Implement `src/train.py` with DataLoader, optimizer, MSE loss, and fixed defaults",
+        "Log train/val loss per epoch to console and `artifacts/logs/train_progress.jsonl`",
+        "Save checkpoints (`last.pt`, `best.pt`) and optionally best-metric metadata",
+        "Guard against NaN/Inf losses and fail fast with explicit errors"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F05",
+      "category": "Evaluation",
+      "description": "Implement validation metric computation and deterministic reporting for smoke and full runs.",
+      "steps": [
+        "Implement `src/eval.py` for deterministic validation pass",
+        "Write epoch-level summary to `artifacts/logs/eval_progress.jsonl`",
+        "Report final and best validation MSE in machine-readable form",
+        "Use fixed dataloader order with no shuffling in validation"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F06",
+      "category": "Quality Gates",
+      "description": "Add deterministic smoke test plus run-time checks for reproducibility and file integrity.",
+      "steps": [
+        "Add `checks/smoke_test.sh` requiring at least 2 epochs",
+        "Verify artifacts (`train`, `val`, logs, checkpoints, report) exist",
+        "Check non-empty progress logs and finite numeric losses",
+        "Ensure a clean second run with same seed produces stable metrics"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F07",
+      "category": "Progress + Sync",
+      "description": "Integrate explicit progress checkpoints and repository synchronization with each progress update.",
+      "steps": [
+        "Maintain `session_progress.md` with task status and latest metrics",
+        "Append status objects to `.codex-research/run_registry.jsonl`",
+        "Run git sync against `https://github.com/CHDTevior/vibe_test.git` on checkpointed updates",
+        "Record sync attempts (success/failure) with timestamps"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F08",
+      "category": "Orchestration",
+      "description": "Provide runnable entry scripts for single-task and full-plan execution with deterministic ordering.",
+      "steps": [
+        "Implement `run_one_task.sh` mapped to task IDs",
+        "Implement `run_plan.sh` executing ordered task list",
+        "Use fixed 10-epoch defaults in full run path",
+        "Emit structured failure messages without silent fallbacks"
+      ],
+      "passes": false
+    }
+  ],
+  "task_plan": {
+    "project": "vibe_test_cpu_mlp_regression",
+    "generated_at": "2026-03-04T03:03:52+00:00",
+    "plan_path": "/iridisfs/scratch/ts1v23/workspace/vibe_coding/codex_auto_demo/.codex-research/plan/normalized_plan.md",
+    "rules": [
+      "CPU-only execution only (no Slurm, no GPU assumptions)",
+      "Use only pre-generated synthetic data from local scripts; no online dataset fetching",
+      "Keep model tiny: <=2 hidden layers, hidden size <=32",
+      "Run 10 epochs as primary full-reproducibility target",
+      "Use deterministic seeding and deterministic transforms everywhere",
+      "Update progress + sync at each checkpoint and never silently skip failures",
+      "Prefer explicit error messages over default exceptions"
+    ],
+    "tasks": [
+      {
+        "id": "T01",
+        "title": "Bootstrap environment and repository controls",
+        "description": "Create and validate workspace skeleton, install minimal dependencies through pip, and register canonical remote.",
+        "steps": [
+          "Run `.codex-research/init.sh`",
+          "Create `src/`, `configs/`, `scripts/`, `artifacts/`, and required `.codex-research` subfolders",
+          "Write `requirements.txt` and initialize `artifacts/.init_marker`"
+        ],
+        "passes": false
+      },
+      {
+        "id": "T02",
+        "title": "Generate deterministic synthetic regression dataset",
+        "description": "Create train/val data from a known function and persist to disk.",
+        "steps": [
+          "Execute `scripts/generate_data.py` with fixed seed 123",
+          "Save `artifacts/data/train.pt` and `artifacts/data/val.pt`",
+          "Store generation metadata in `artifacts/data/dataset_meta.json`",
+          "Verify no NaN/Inf values in tensors"
+        ],
+        "passes": false
+      },
+      {
+        "id": "T03",
+        "title": "Implement deterministic tiny MLP model",
+        "description": "Add constrained regression model in `src/model.py` and sanity-compile.",
+        "steps": [
+          "Implement model with up to two hidden layers and width <=32",
+          "Add forward test for shape and dtype consistency",
+          "Guard default architecture in code comments and checks",
+          "Validate compile/syntax via `python -m py_compile src/model.py`"
+        ],
+        "passes": false
+      },
+      {
+        "id": "T04",
+        "title": "Implement deterministic train loop",
+        "description": "Implement fixed 10-epoch training flow with per-epoch metrics and checkpointing.",
+        "steps": [
+          "Add `src/train.py` with fixed dataloader and MSE loss",
+          "Set seed in all random paths and deterministic backend flags",
+          "Log to `artifacts/logs/train_progress.jsonl` each epoch",
+          "Emit `artifacts/checkpoints/last.pt` and `artifacts/checkpoints/best.pt`"
+        ],
+        "passes": false
+      },
+      {
+        "id": "T05",
+        "title": "Implement validation/evaluation",
+        "description": "Create deterministic validation pass and metric reporting.",
+        "steps": [
+          "Add `src/eval.py` to evaluate saved checkpoints",
+          "Compute and log val MSE each run",
+          "Write report lines to `artifacts/logs/eval_progress.jsonl`",
+          "Fail on missing checkpoint or corrupted artifact"
+        ],
+        "passes": false
+      },
+      {
+        "id": "T06",
+        "title": "Add smoke test",
+        "description": "Create and run minimum verification pipeline for correctness and stability.",
+        "steps": [
+          "Implement `checks/smoke_test.sh` with 2+ epoch test path",
+          "Assert presence of required artifacts/log files",
+          "Check loss monotonic trend in at least first N-1 epochs",
+          "Verify deterministic repeatability with fixed seed on rerun"
+        ],
+        "passes": false
+      },
+      {
+        "id": "T07",
+        "title": "Integrate progress updates and sync",
+        "description": "Tie progress checkpoints to explicit repository synchronization commands.",
+        "steps": [
+          "Define checkpoint states in `session_progress.md`",
+          "Add progress append to `.codex-research/run_registry.jsonl`",
+          "On each checkpoint, attempt git add/commit/push to configured URL",
+          "Capture sync failures in registry and keep workflow non-blocking where needed"
+        ],
+        "passes": false
+      },
+      {
+        "id": "T08",
+        "title": "Produce full run artifacts and final report",
+        "description": "Execute full 10-epoch deterministic run and persist final result summary.",
+        "steps": [
+          "Execute `.codex-research/run_plan.sh`",
+          "Collect final validation metric and best epoch summary",
+          "Write run summary to `artifacts/final_report.json`",
+          "Append completion status to session progress and registry"
+        ],
+        "passes": false
+      }
+    ]
+  }
+}

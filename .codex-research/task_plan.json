@@ -1,0 +1,111 @@
+{
+  "project": "vibe_test_cpu_mlp_regression",
+  "generated_at": "2026-03-04T03:03:52+00:00",
+  "plan_path": "/iridisfs/scratch/ts1v23/workspace/vibe_coding/codex_auto_demo/.codex-research/plan/normalized_plan.md",
+  "rules": [
+    "CPU-only execution only (no Slurm, no GPU assumptions)",
+    "Use only pre-generated synthetic data from local scripts; no online dataset fetching",
+    "Keep model tiny: <=2 hidden layers, hidden size <=32",
+    "Run 10 epochs as primary full-reproducibility target",
+    "Use deterministic seeding and deterministic transforms everywhere",
+    "Update progress + sync at each checkpoint and never silently skip failures",
+    "Prefer explicit error messages over default exceptions"
+  ],
+  "tasks": [
+    {
+      "id": "T01",
+      "title": "Bootstrap environment and repository controls",
+      "description": "Create and validate workspace skeleton, install minimal dependencies through pip, and register canonical remote.",
+      "steps": [
+        "Run `.codex-research/init.sh`",
+        "Create `src/`, `configs/`, `scripts/`, `artifacts/`, and required `.codex-research` subfolders",
+        "Write `requirements.txt` and initialize `artifacts/.init_marker`"
+      ],
+      "passes": false
+    },
+    {
+      "id": "T02",
+      "title": "Generate deterministic synthetic regression dataset",
+      "description": "Create train/val data from a known function and persist to disk.",
+      "steps": [
+        "Execute `scripts/generate_data.py` with fixed seed 123",
+        "Save `artifacts/data/train.pt` and `artifacts/data/val.pt`",
+        "Store generation metadata in `artifacts/data/dataset_meta.json`",
+        "Verify no NaN/Inf values in tensors"
+      ],
+      "passes": false
+    },
+    {
+      "id": "T03",
+      "title": "Implement deterministic tiny MLP model",
+      "description": "Add constrained regression model in `src/model.py` and sanity-compile.",
+      "steps": [
+        "Implement model with up to two hidden layers and width <=32",
+        "Add forward test for shape and dtype consistency",
+        "Guard default architecture in code comments and checks",
+        "Validate compile/syntax via `python -m py_compile src/model.py`"
+      ],
+      "passes": false
+    },
+    {
+      "id": "T04",
+      "title": "Implement deterministic train loop",
+      "description": "Implement fixed 10-epoch training flow with per-epoch metrics and checkpointing.",
+      "steps": [
+        "Add `src/train.py` with fixed dataloader and MSE loss",
+        "Set seed in all random paths and deterministic backend flags",
+        "Log to `artifacts/logs/train_progress.jsonl` each epoch",
+        "Emit `artifacts/checkpoints/last.pt` and `artifacts/checkpoints/best.pt`"
+      ],
+      "passes": false
+    },
+    {
+      "id": "T05",
+      "title": "Implement validation/evaluation",
+      "description": "Create deterministic validation pass and metric reporting.",
+      "steps": [
+        "Add `src/eval.py` to evaluate saved checkpoints",
+        "Compute and log val MSE each run",
+        "Write report lines to `artifacts/logs/eval_progress.jsonl`",
+        "Fail on missing checkpoint or corrupted artifact"
+      ],
+      "passes": false
+    },
+    {
+      "id": "T06",
+      "title": "Add smoke test",
+      "description": "Create and run minimum verification pipeline for correctness and stability.",
+      "steps": [
+        "Implement `checks/smoke_test.sh` with 2+ epoch test path",
+        "Assert presence of required artifacts/log files",
+        "Check loss monotonic trend in at least first N-1 epochs",
+        "Verify deterministic repeatability with fixed seed on rerun"
+      ],
+      "passes": false
+    },
+    {
+      "id": "T07",
+      "title": "Integrate progress updates and sync",
+      "description": "Tie progress checkpoints to explicit repository synchronization commands.",
+      "steps": [
+        "Define checkpoint states in `session_progress.md`",
+        "Add progress append to `.codex-research/run_registry.jsonl`",
+        "On each checkpoint, attempt git add/commit/push to configured URL",
+        "Capture sync failures in registry and keep workflow non-blocking where needed"
+      ],
+      "passes": false
+    },
+    {
+      "id": "T08",
+      "title": "Produce full run artifacts and final report",
+      "description": "Execute full 10-epoch deterministic run and persist final result summary.",
+      "steps": [
+        "Execute `.codex-research/run_plan.sh`",
+        "Collect final validation metric and best epoch summary",
+        "Write run summary to `artifacts/final_report.json`",
+        "Append completion status to session progress and registry"
+      ],
+      "passes": false
+    }
+  ]
+}

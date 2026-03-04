@@ -1,0 +1,172 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "summary",
+    "required_files",
+    "feature_list",
+    "task_plan",
+    "files"
+  ],
+  "properties": {
+    "summary": {
+      "type": "string",
+      "minLength": 20
+    },
+    "required_files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "reason"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 5
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3
+          }
+        }
+      }
+    },
+    "feature_list": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "category",
+          "description",
+          "steps",
+          "passes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 2
+          },
+          "category": {
+            "type": "string",
+            "minLength": 2
+          },
+          "description": {
+            "type": "string",
+            "minLength": 5
+          },
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 2
+            }
+          },
+          "passes": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "task_plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project",
+        "rules",
+        "tasks"
+      ],
+      "properties": {
+        "project": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 3
+          }
+        },
+        "tasks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "title",
+              "description",
+              "steps",
+              "passes"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 2
+              },
+              "title": {
+                "type": "string",
+                "minLength": 3
+              },
+              "description": {
+                "type": "string",
+                "minLength": 5
+              },
+              "steps": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 2
+                }
+              },
+              "passes": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "content",
+          "reason",
+          "executable"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 5
+          },
+          "content": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3
+          },
+          "executable": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}
