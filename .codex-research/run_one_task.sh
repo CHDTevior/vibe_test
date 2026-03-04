@@ -5,6 +5,17 @@ TASK_ID="${1:?Usage: $0 <TASK_ID>}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 cd "${PROJECT_ROOT}"
+ENV_NAME="${ENV_NAME:-vibe_test}"
+
+run_in_env() {
+  local cmd=("$@")
+  if command -v conda >/dev/null 2>&1; then
+    conda run -n "${ENV_NAME}" "${cmd[@]}"
+  else
+    echo "[warn] conda not found; falling back to current environment for: ${cmd[*]}" >&2
+    "${cmd[@]}"
+  fi
+}
 
 sync_progress() {
   local note="$1"
@@ -45,15 +56,15 @@ case "${task_id}" in
   T01)
     bash .codex-research/init.sh ;;
   T02)
-    python scripts/generate_data.py --seed 123 --num-samples 2048 --num-features 16 --train-ratio 0.8 --noise-std 0.01 --artifact-root artifacts/data ;;
+    run_in_env python scripts/generate_data.py --seed 123 --num-samples 2048 --num-features 16 --train-ratio 0.8 --noise-std 0.01 --artifact-root artifacts/data ;;
   T03)
-    python -m py_compile src/model.py ;;
+    run_in_env python -m py_compile src/model.py ;;
   T04)
-    bash scripts/run_train.sh --seed 123 --epochs 10 --batch-size 64 --lr 0.01 --hidden-dim 24 --data-root artifacts/data --artifacts-root artifacts ;;
+    run_in_env bash scripts/run_train.sh --seed 123 --epochs 10 --batch-size 64 --lr 0.01 --hidden-dim 24 --data-root artifacts/data --artifacts-root artifacts ;;
   T05)
-    python src/eval.py --seed 123 --checkpoint artifacts/checkpoints/best.pt --data-root artifacts/data ;;
+    run_in_env python src/eval.py --seed 123 --checkpoint artifacts/checkpoints/best.pt --data-root artifacts/data ;;
   T06)
-    bash .codex-research/checks/smoke_test.sh ;;
+    run_in_env bash .codex-research/checks/smoke_test.sh ;;
   T07)
     python - <<'PY'
 from pathlib import Path
