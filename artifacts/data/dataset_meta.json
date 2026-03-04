@@ -1,0 +1,10 @@
+{
+  "seed": 123,
+  "num_samples": 2048,
+  "num_features": 16,
+  "train_ratio": 0.8,
+  "train_size": 1638,
+  "val_size": 410,
+  "noise_std": 0.01,
+  "torch_seed": 123
+}
