@@ -19,3 +19,6 @@
 {"run_id": "full_plan", "task": "T04", "status": "-", "timestamp": "2026-03-04T03:10:50.571322Z"}
 {"run_id": "full_plan", "task": "T05", "status": "-", "timestamp": "2026-03-04T03:10:50.732648Z"}
 {"run_id": "full_plan", "task": "T01", "status": "-", "timestamp": "2026-03-04T03:11:13.663638Z"}
+{"run_id": "run_one_task", "status": "done", "timestamp": "2026-03-04T03:11:27.973041Z", "task": "T01"}
+{"run_id": "full_plan", "task": "T01", "status": "-", "timestamp": "2026-03-04T03:11:28.128685Z"}
+{"run_id": "full_plan", "task": "T02", "status": "-", "timestamp": "2026-03-04T03:11:28.226715Z"}
